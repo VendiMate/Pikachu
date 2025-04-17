@@ -7,12 +7,17 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write ."
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,json}\""
   },
   "dependencies": {
+    "autoprefixer": "^10.4.21",
     "axios": "^1.8.4",
+    "dotenv": "^16.5.0",
     "leaflet": "^1.9.4",
+    "lucide-react": "^0.488.0",
+    "mapbox-gl": "^3.11.0",
     "next": "15.2.2",
+    "postcss": "^8.5.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-leaflet": "^5.0.0"
@@ -23,6 +28,6 @@
     "eslint": "^9",
     "eslint-config-next": "15.2.2",
     "prettier": "^3.5.3",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4.1.4"
   }
 }
