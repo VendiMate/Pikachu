@@ -17,7 +17,6 @@ const Popup = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), {
 export const MarkerComponent = ({ x_coordinate, y_coordinate }) => {
   return (
     <>
-      {/* Stanford Court, Irvine */}
       <Marker
         position={[x_coordinate, y_coordinate]}
         icon={L.icon({
@@ -26,9 +25,7 @@ export const MarkerComponent = ({ x_coordinate, y_coordinate }) => {
           iconSize: [25, 41],
           iconAnchor: [12, 41],
         })}
-      >
-        <Popup>Stanford Court, Irvine</Popup>
-      </Marker>
+      ></Marker>
     </>
   );
 };
