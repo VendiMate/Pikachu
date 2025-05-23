@@ -8,6 +8,7 @@ export const navigateToStep = (
   currentLeg,
   setCurrentLeg,
   map,
+  setCurrentInstruction,
 ) => {
   if (!steps || !steps.length) return;
   let nextStep;
@@ -26,11 +27,26 @@ export const navigateToStep = (
     // Calculate the bearing based on the direction of travel
     let bearing = 0;
     if (direction === 'next') {
-      // For next step, use the bearing_after of current step
       bearing = step.maneuver.bearing_after || 0;
     } else if (direction === 'prev') {
       bearing = step.maneuver.bearing_before || 0;
     }
+
+    // Update current instruction
+    let directionIcon = '→';
+    if (step.maneuver.modifier === 'left') directionIcon = '←';
+    if (step.maneuver.modifier === 'right') directionIcon = '→';
+    if (step.maneuver.modifier === 'slight left') directionIcon = '↖';
+    if (step.maneuver.modifier === 'slight right') directionIcon = '↗';
+    if (step.maneuver.modifier === 'sharp left') directionIcon = '↰';
+    if (step.maneuver.modifier === 'sharp right') directionIcon = '↱';
+    if (step.maneuver.type === 'arrive') directionIcon = '🏁';
+
+    setCurrentInstruction({
+      icon: directionIcon,
+      text: step.maneuver.instruction,
+      distance: step.distance ? Math.round(step.distance) : null,
+    });
 
     map.flyTo({
       center: step.maneuver.location,
@@ -40,16 +56,6 @@ export const navigateToStep = (
       essential: true,
       duration: 1000,
     });
-  }
-
-  document.querySelectorAll('.instruction-step').forEach((el) => {
-    el.classList.remove('active-step');
-  });
-  const stepElement = document.getElementById(`step-${nextStep}`);
-  if (stepElement) {
-    stepElement.classList.add('active-step');
-    // Scroll to make the step visible in the instructions panel
-    stepElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 };
 
@@ -78,6 +84,7 @@ export const getRouteToVendingMachine = async (
   setRoute,
   setRouteCoordinates,
   setCurrentLeg,
+  setCurrentInstruction,
 ) => {
   if (!userLocation || !selectedVendingMachineLocation) return;
 
@@ -102,6 +109,25 @@ export const getRouteToVendingMachine = async (
     setRoute(routeSteps);
     setRouteCoordinates(routeGeometry.coordinates);
     setCurrentLeg(0);
+
+    // Set initial instruction
+    if (routeSteps && routeSteps[0]) {
+      const firstStep = routeSteps[0];
+      let directionIcon = '→';
+      if (firstStep.maneuver.modifier === 'left') directionIcon = '←';
+      if (firstStep.maneuver.modifier === 'right') directionIcon = '→';
+      if (firstStep.maneuver.modifier === 'slight left') directionIcon = '↖';
+      if (firstStep.maneuver.modifier === 'slight right') directionIcon = '↗';
+      if (firstStep.maneuver.modifier === 'sharp left') directionIcon = '↰';
+      if (firstStep.maneuver.modifier === 'sharp right') directionIcon = '↱';
+      if (firstStep.maneuver.type === 'arrive') directionIcon = '🏁';
+
+      setCurrentInstruction({
+        icon: directionIcon,
+        text: firstStep.maneuver.instruction,
+        distance: firstStep.distance ? Math.round(firstStep.distance) : null,
+      });
+    }
 
     // If a route already exists on the map, remove it
     if (map.getSource('route')) {
@@ -141,60 +167,12 @@ export const getRouteToVendingMachine = async (
       },
     });
 
-    // Create points at each maneuver location
-    const turnPoints = routeSteps.map((step, i) => ({
-      type: 'Feature',
-      properties: {
-        index: i,
-        instruction: step.maneuver.instruction,
-        type: step.maneuver.type,
-        modifier: step.maneuver.modifier,
-      },
-      geometry: {
-        type: 'Point',
-        coordinates: step.maneuver.location,
-      },
-    }));
-
-    map.addSource('turn-points', {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: turnPoints,
-      },
-    });
-
-    // Add colored markers for different turn types
-    map.addLayer({
-      id: 'turn-points-layer',
-      type: 'circle',
-      source: 'turn-points',
-      paint: {
-        'circle-radius': 6,
-        'circle-color': [
-          'match',
-          ['get', 'modifier'],
-          'left',
-          '#34a853',
-          'right',
-          '#34a853',
-          'straight',
-          '#34a853',
-          '#34a853',
-        ],
-        'circle-stroke-color': '#ffffff',
-        'circle-stroke-width': 2,
-      },
-    });
-
     // Add start and destination markers
-    // If a route already exists on the map, remove it
     if (map.getSource('endpoint-markers')) {
       map.removeLayer('endpoint-markers-layer');
       map.removeSource('endpoint-markers');
     }
 
-    // Add the endpoint markers to the map
     map.addSource('endpoint-markers', {
       type: 'geojson',
       data: {
@@ -227,7 +205,6 @@ export const getRouteToVendingMachine = async (
       },
     });
 
-    // Add the endpoint markers layer to the map
     map.addLayer({
       id: 'endpoint-markers-layer',
       type: 'circle',
@@ -241,7 +218,6 @@ export const getRouteToVendingMachine = async (
     });
 
     fitMapToRoute(map, routeGeometry.coordinates);
-    addGoogleMapsLikeDirections(map, routeSteps);
   } catch (error) {
     console.error('Error getting route to vending machine:', error);
     throw error;
@@ -271,83 +247,4 @@ const fitMapToRoute = (map, routeCoordinates) => {
     bounds.extend(new mapboxgl.LngLat(coord[0], coord[1]));
   });
   map.fitBounds(bounds, { padding: 80 });
-};
-
-const addGoogleMapsLikeDirections = (map, routeSteps) => {
-  const directionsPanel = document.getElementById('instructions');
-  if (!directionsPanel) return;
-
-  const totalDistance = Math.round(
-    routeSteps.reduce((sum, step) => sum + step.distance, 0),
-  );
-  const totalDuration = Math.floor(
-    routeSteps.reduce((sum, step) => sum + step.duration, 0) / 60,
-  );
-
-  let instructionsHTML = `
-        <div class="instructions-header">
-            <h3>Directions to Vending Machine</h3>
-            <p><strong>${totalDistance} meters</strong> (about ${totalDuration} min)</p>
-        </div>
-    `;
-
-  instructionsHTML += '<ol class="directions-list">';
-
-  // Add starting point
-  instructionsHTML += `
-        <li class="instruction-step" id="step-start">
-            <span class="direction-icon">●</span>
-            <span class="instruction-text">Your location</span>
-        </li>
-    `;
-
-  // Add each direction step
-  routeSteps.forEach((step, idx) => {
-    let directionIcon = '→';
-    if (step.maneuver.modifier === 'left') directionIcon = '←';
-    if (step.maneuver.modifier === 'right') directionIcon = '→';
-    if (step.maneuver.modifier === 'slight left') directionIcon = '↖';
-    if (step.maneuver.modifier === 'slight right') directionIcon = '↗';
-    if (step.maneuver.modifier === 'sharp left') directionIcon = '↰';
-    if (step.maneuver.modifier === 'sharp right') directionIcon = '↱';
-    if (step.maneuver.type === 'arrive') directionIcon = '🏁';
-
-    const distance = step.distance ? `${Math.round(step.distance)} m` : '';
-
-    instructionsHTML += `
-            <li class="instruction-step" id="step-${idx}" onClick="focusStep(${idx})">
-                <span class="direction-icon">${directionIcon}</span>
-                <div class="instruction-details">
-                    <div class="main-instruction">${step.maneuver.instruction}</div>
-                    ${distance ? `<div class="step-details">${distance}</div>` : ''}
-                </div>
-            </li>
-        `;
-  });
-
-  instructionsHTML += '</ol>';
-
-  directionsPanel.innerHTML = instructionsHTML;
-  directionsPanel.style.display = 'block';
-
-  // Add the step focus function to window
-  window.focusStep = (stepIndex) => {
-    const step = routeSteps[stepIndex];
-    if (step && step.maneuver && step.maneuver.location) {
-      map.flyTo({
-        center: step.maneuver.location,
-        zoom: 19,
-        pitch: 60,
-        bearing: step.maneuver.bearing_after || 0,
-        essential: true,
-        duration: 1000,
-      });
-
-      // Highlight the current step in the instructions
-      document.querySelectorAll('.instruction-step').forEach((el) => {
-        el.classList.remove('active-step');
-      });
-      document.getElementById(`step-${stepIndex}`).classList.add('active-step');
-    }
-  };
 };
