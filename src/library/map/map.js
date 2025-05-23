@@ -30,11 +30,13 @@ export const Map = () => {
     longitude: -117.8427,
   });
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedInventory, setSelectedInventory] = useState(null);
   const [route, setRoute] = useState(null);
   const [nearestLocation, setNearestLocation] = useState(null);
   const [navigationMode, setNavigationMode] = useState(false);
   const [currentLeg, setCurrentLeg] = useState(0);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
+  const [currentInstruction, setCurrentInstruction] = useState(null);
   // const [navigationProgress, setNavigationProgress] = useState(0);
   const [viewMode, setViewMode] = useState('3d'); // '3d' or '2d'
 
@@ -143,6 +145,7 @@ export const Map = () => {
     const fetchCoordinates = async () => {
       try {
         const res = await axios.get('http://localhost:3003/v1/coordinates');
+        console.log(res.data);
         setLocations(res.data);
       } catch (error) {
         console.error('Error fetching vending machines coordinates:', error);
@@ -151,6 +154,19 @@ export const Map = () => {
     };
     fetchCoordinates();
   }, []);
+
+  // Get Vending Machine Inventory for the selected vending machine
+  const getInventory = async (id) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3003/v1/vending-machines/inventory/${id}`,
+      );
+      console.log(res.data);
+    } catch (error) {
+      console.error('Error fetching vending machine inventory:', error);
+      throw error;
+    }
+  };
 
   // Find nearest vending machine when locations or user location changes
   useEffect(() => {
@@ -237,22 +253,49 @@ export const Map = () => {
       const popupContainer = document.createElement('div');
       const root = ReactDOM.createRoot(popupContainer);
 
-      root.render(
-        <VendingMachinesPopup
-          location={location}
-          onRouteClick={() => {
-            setSelectedLocation({
-              latitude: location.x_coordinate,
-              longitude: location.y_coordinate,
-              id: location.id,
-            });
-          }}
-        />,
-      );
+      // Create a wrapper component to handle cleanup
+      const PopupWrapper = () => {
+        useEffect(() => {
+          // Cleanup function
+          return () => {
+            root.unmount();
+          };
+        }, []);
 
-      const popup = new mapboxgl.Popup({ offset: 25 }).setDOMContent(
-        popupContainer,
-      );
+        return (
+          <VendingMachinesPopup
+            location={location}
+            onRouteClick={() => {
+              console.log('Route clicked for location:', location.id);
+              setSelectedLocation({
+                latitude: location.x_coordinate,
+                longitude: location.y_coordinate,
+                id: location.id,
+              });
+            }}
+            onInventoryClick={() => {
+              console.log('Inventory clicked for location:', location.id);
+              getInventory(location.id);
+            }}
+          />
+        );
+      };
+
+      root.render(<PopupWrapper />);
+
+      const popup = new mapboxgl.Popup({
+        offset: 25,
+      }).setDOMContent(popupContainer);
+
+      // Hide directions panel when popup is closed
+      popup.on('close', () => {
+        const instructions = document.getElementById('instructions');
+        if (instructions) {
+          instructions.style.display = 'none';
+        }
+        // Clear the selected location to remove the route
+        setSelectedLocation(null);
+      });
 
       marker.setPopup(popup);
     });
@@ -267,6 +310,7 @@ export const Map = () => {
       setRoute,
       setRouteCoordinates,
       setCurrentLeg,
+      setCurrentInstruction,
     );
   }, [selectedLocation, userLocation]);
 
