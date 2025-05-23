@@ -507,74 +507,24 @@ export default function GoogleMaps() {
                   onClick={handlePanoClick}
                 />
                 {/* Big navigation arrows overlay */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: 40,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    zIndex: 40,
-                    display: 'flex',
-                    gap: 40,
-                    pointerEvents: 'none',
-                  }}
-                >
+                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-40 flex gap-10 pointer-events-none">
                   <button
                     onClick={() => moveStreetView('left')}
-                    style={{
-                      pointerEvents: 'auto',
-                      background: 'rgba(0,0,0,0.5)',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: 70,
-                      height: 70,
-                      color: 'white',
-                      fontSize: 40,
-                      fontWeight: 700,
-                      marginRight: 10,
-                      cursor: 'pointer',
-                      boxShadow: '0 2px 8px #0006',
-                    }}
+                    className="pointer-events-auto bg-black/50 border-none rounded-full w-[70px] h-[70px] text-white text-[2.5rem] font-bold mr-2 cursor-pointer shadow-lg hover:bg-black/70 transition-colors"
                     aria-label="Turn Left"
                   >
                     &#8592;
                   </button>
                   <button
                     onClick={() => moveStreetView('forward')}
-                    style={{
-                      pointerEvents: 'auto',
-                      background: 'rgba(52,168,83,0.9)',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: 90,
-                      height: 90,
-                      color: 'white',
-                      fontSize: 50,
-                      fontWeight: 700,
-                      margin: '0 10px',
-                      cursor: 'pointer',
-                      boxShadow: '0 2px 12px #0008',
-                    }}
+                    className="pointer-events-auto bg-green-500/90 border-none rounded-full w-[90px] h-[90px] text-white text-[3rem] font-bold mx-2 cursor-pointer shadow-xl hover:bg-green-600 transition-colors"
                     aria-label="Move Forward"
                   >
                     &#8593;
                   </button>
                   <button
                     onClick={() => moveStreetView('right')}
-                    style={{
-                      pointerEvents: 'auto',
-                      background: 'rgba(0,0,0,0.5)',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: 70,
-                      height: 70,
-                      color: 'white',
-                      fontSize: 40,
-                      fontWeight: 700,
-                      marginLeft: 10,
-                      cursor: 'pointer',
-                      boxShadow: '0 2px 8px #0006',
-                    }}
+                    className="pointer-events-auto bg-black/50 border-none rounded-full w-[70px] h-[70px] text-white text-[2.5rem] font-bold ml-2 cursor-pointer shadow-lg hover:bg-black/70 transition-colors"
                     aria-label="Turn Right"
                   >
                     &#8594;
@@ -583,56 +533,17 @@ export default function GoogleMaps() {
                 {/* Close Street View button */}
                 <button
                   onClick={handleHideStreetView}
-                  style={{
-                    position: 'absolute',
-                    top: 30,
-                    right: 30,
-                    zIndex: 50,
-                    background: '#4285F4',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: 6,
-                    padding: '10px 22px',
-                    fontWeight: 600,
-                    fontSize: 18,
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 8px #0004',
-                  }}
+                  className="absolute top-8 right-8 z-50 bg-blue-600 text-white rounded-lg px-6 py-2.5 font-semibold text-lg cursor-pointer shadow-lg hover:bg-blue-700 transition-colors"
                 >
                   Close Street View
                 </button>
               </>
             ) : (
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  width: '100vw',
-                  height: '50vh',
-                  background: 'rgba(0,0,0,0.85)',
-                  color: 'white',
-                  zIndex: 30,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 20,
-                  fontWeight: 500,
-                }}
-              >
+              <div className="absolute bottom-0 left-0 w-screen h-1/2 bg-black/85 text-white z-30 flex items-center justify-center text-xl font-semibold">
                 Street View not available at this location.
                 <button
                   onClick={handleHideStreetView}
-                  style={{
-                    marginLeft: 24,
-                    background: '#4285F4',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: 4,
-                    padding: '8px 16px',
-                    cursor: 'pointer',
-                    fontWeight: 500,
-                  }}
+                  className="ml-6 bg-blue-600 text-white rounded px-4 py-2 cursor-pointer font-medium hover:bg-blue-700 transition-colors"
                 >
                   Close
                 </button>
