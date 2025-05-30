@@ -144,7 +144,9 @@ export const Map = () => {
   useEffect(() => {
     const fetchCoordinates = async () => {
       try {
-        const res = await axios.get('http://localhost:3003/v1/coordinates');
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/coordinates`,
+        );
         console.log(res.data);
         setLocations(res.data);
       } catch (error) {
@@ -159,7 +161,7 @@ export const Map = () => {
   const getInventory = async (id) => {
     try {
       const res = await axios.get(
-        `http://localhost:3003/v1/vending-machines/inventory/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/vending-machines/inventory/${id}`,
       );
       console.log(res.data);
     } catch (error) {

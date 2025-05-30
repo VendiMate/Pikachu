@@ -50,7 +50,9 @@ export default function GoogleMaps() {
   useEffect(() => {
     const fetchVendingMachines = async () => {
       try {
-        const res = await axios.get('http://localhost:3003/v1/coordinates');
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/coordinates`,
+        );
         setVendingMachines(
           res.data
             .map((vm) => ({

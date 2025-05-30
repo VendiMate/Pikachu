@@ -18,7 +18,7 @@ const NavigationPanel = ({
     const fetchInventoryData = async (id) => {
       try {
         const res = await axios.get(
-          `http://localhost:3003/v1/vending-machines/inventory/${id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/vending-machines/inventory/${id}`,
         );
         console.log(res.data);
         setApiInventoryData(res.data);
