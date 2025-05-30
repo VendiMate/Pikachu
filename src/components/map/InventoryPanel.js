@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import React from 'react';
+import Image from 'next/image';
 
 const InventoryPanel = ({ inventoryData }) => {
   const [snacksData, setSnacksData] = useState(null);
@@ -30,10 +32,12 @@ const InventoryPanel = ({ inventoryData }) => {
               key={snack.id}
               className="flex items-center gap-2.5 border-b border-gray-100 py-2 w-full rounded-md transition-colors cursor-pointer hover:bg-gray-50"
             >
-              <img
+              <Image
                 src={snack.image_url}
                 alt={snack.name}
-                className="w-10 h-10 object-cover rounded-md border border-gray-200 bg-gray-50"
+                width={100}
+                height={100}
+                className="w-24 h-24 object-cover rounded"
               />
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-base text-gray-900 truncate">
@@ -63,10 +67,12 @@ const InventoryPanel = ({ inventoryData }) => {
               key={drink.id}
               className="flex items-center gap-2.5 border-b border-gray-100 py-2 w-full rounded-md transition-colors cursor-pointer hover:bg-gray-50"
             >
-              <img
+              <Image
                 src={drink.image_url}
                 alt={drink.name}
-                className="w-10 h-10 object-cover rounded-md border border-gray-200 bg-gray-50"
+                width={100}
+                height={100}
+                className="w-24 h-24 object-cover rounded"
               />
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-base text-gray-900 truncate">

@@ -390,7 +390,7 @@ export default function GoogleMaps() {
         }, 0);
       }
     };
-  }, [clickedMarker, isLoaded, showInventory]);
+  }, [clickedMarker, isLoaded, showInventory, handleShowRoute]);
 
   // Add click handler to map to close info window
   const handleMapClick = () => {

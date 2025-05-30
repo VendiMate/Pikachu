@@ -186,8 +186,8 @@ const NavigationPanel = ({
 
       {/* Help Text */}
       <div className="bg-gray-50 px-4 py-3 text-xs text-gray-500 italic border-t border-gray-100">
-        Drag the blue "You" marker to simulate your location. Use Street View to
-        see the real-world route start.
+        Drag the blue &quot;You&quot; marker to simulate your location. Use
+        Street View to see the real-world route start.
       </div>
     </div>
   );

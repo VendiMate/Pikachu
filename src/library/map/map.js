@@ -39,6 +39,7 @@ export const Map = () => {
   const [currentInstruction, setCurrentInstruction] = useState(null);
   // const [navigationProgress, setNavigationProgress] = useState(0);
   const [viewMode, setViewMode] = useState('3d'); // '3d' or '2d'
+  const markers = useRef([]);
 
   useEffect(() => {
     // Add Google Maps-like CSS for the instructions panel
@@ -237,15 +238,13 @@ export const Map = () => {
 
   // Add markers when location data is loaded
   useEffect(() => {
-    if (!map.current || !locations.length) return;
+    if (!map.current || !locations) return;
 
-    // Remove existing markers
-    const existingMarkers = document.getElementsByClassName('mapboxgl-marker');
-    while (existingMarkers[0]) {
-      existingMarkers[0].parentNode.removeChild(existingMarkers[0]);
-    }
+    // Clear existing markers
+    markers.current.forEach((marker) => marker.remove());
+    markers.current = [];
 
-    // Add new markers for vending machines
+    // Add markers for each location
     locations.forEach((location) => {
       const marker = new mapboxgl.Marker({ color: '#FF0000' })
         .setLngLat([location.y_coordinate, location.x_coordinate]) // Mapbox uses [lng, lat]
@@ -300,8 +299,9 @@ export const Map = () => {
       });
 
       marker.setPopup(popup);
+      markers.current.push(marker);
     });
-  }, [locations, map.current, userLocation]);
+  }, [locations, userLocation]);
 
   // Enhance the getRoute function to better process the directions
   useEffect(() => {
