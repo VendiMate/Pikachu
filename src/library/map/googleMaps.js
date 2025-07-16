@@ -54,7 +54,7 @@ export default function GoogleMaps() {
           `${process.env.NEXT_PUBLIC_API_URL}/coordinates`,
         );
         setVendingMachines(
-          res.data
+          res.data.data
             .map((vm) => ({
               ...vm,
               lat: parseFloat(vm.x_coordinate),
