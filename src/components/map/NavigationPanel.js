@@ -20,8 +20,7 @@ const NavigationPanel = ({
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/vending-machines/inventory/${id}`,
         );
-        console.log(res.data);
-        setApiInventoryData(res.data);
+        setApiInventoryData(res.data.data);
       } catch (err) {
         alert('Failed to get inventory data.');
         console.error(err);
