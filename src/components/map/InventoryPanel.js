@@ -6,14 +6,18 @@ const InventoryPanel = ({ inventoryData }) => {
   const [snacksData, setSnacksData] = useState(null);
   const [drinksData, setDrinksData] = useState(null);
   useEffect(() => {
-    const formatInventoryData = (inventoryData) => {
-      console.log('Inventory Data', inventoryData);
-      const snacksData = inventoryData?.data?.snacks || [];
+    if (Array.isArray(inventoryData)) {
+      const snacksData = inventoryData.filter(item => item.inventory_type === 'snack');
       setSnacksData(snacksData);
-      const drinksData = inventoryData?.data?.drinks || [];
+      const drinksData = inventoryData.filter(item => item.inventory_type === 'drink');
       setDrinksData(drinksData);
-    };
-    formatInventoryData(inventoryData);
+    } else if (inventoryData?.data) {
+      setSnacksData(inventoryData.data.snacks || []);
+      setDrinksData(inventoryData.data.drinks || []);
+    } else {
+      setSnacksData([]);
+      setDrinksData([]);
+    }
   }, [inventoryData]);
 
   return (
