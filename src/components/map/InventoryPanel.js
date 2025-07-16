@@ -7,9 +7,10 @@ const InventoryPanel = ({ inventoryData }) => {
   const [drinksData, setDrinksData] = useState(null);
   useEffect(() => {
     const formatInventoryData = (inventoryData) => {
-      const snacksData = inventoryData.data.snacks;
+      console.log('Inventory Data', inventoryData);
+      const snacksData = inventoryData?.data?.snacks || [];
       setSnacksData(snacksData);
-      const drinksData = inventoryData.data.drinks;
+      const drinksData = inventoryData?.data?.drinks || [];
       setDrinksData(drinksData);
     };
     formatInventoryData(inventoryData);
