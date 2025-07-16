@@ -64,6 +64,7 @@ export default function GoogleMaps() {
         );
       } catch (err) {
         alert('Failed to fetch vending machines.');
+        console.error(err);
       }
     };
     fetchVendingMachines();
